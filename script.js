@@ -1,37 +1,38 @@
 'use strict';
 
-// Data
+//#region  USERS
 const account1 = {
     owner: 'Andrew Wastardy',
     movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
     interestRate: 1.2, // %
-    pin: 1111,
+    pin: 1,
 };
 
 const account2 = {
     owner: 'Mary Davis',
     movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
     interestRate: 1.5,
-    pin: 2222,
+    pin: 2,
 };
 
 const account3 = {
     owner: 'Michael Towns',
     movements: [200, -200, 340, -300, -20, 50, 400, -460],
     interestRate: 0.7,
-    pin: 3333,
+    pin: 3,
 };
 
 const account4 = {
     owner: 'Sarah Talor',
     movements: [430, 1000, 700, 50, 90],
     interestRate: 1,
-    pin: 4444,
+    pin: 4,
 };
+//#endregion
 
 const accounts = [account1, account2, account3, account4];
 
-// Elements
+//#region QUERY SELECTORS
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
 const labelBalance = document.querySelector('.balance__value');
@@ -56,6 +57,18 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+//#endregion
+
+//#region METHODS
+const createUsername = function(accounts) {
+    accounts.forEach(acc => {
+        acc.username = acc.owner
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0))
+        .join('');
+    });
+}
 
 const displayMovements = function(movements) {
     containerMovements.innerHTML = '';
@@ -106,35 +119,49 @@ const calcOutcomes = function(movements) {
     labelSumOut.textContent = `${Math.abs(outcomes)}€`
 }
 
-const calcInterest = function(movements) {
+const calcInterest = function(movements, interestRate) {
     const interest = movements
         .filter(mov => mov > 0)
-        .map(deposit => deposit * 1.2 / 100)
+        .map(deposit => deposit * interestRate / 100)
         .filter(interest => interest >= 1)
         .reduce((sumDeposit, num) => sumDeposit + num, 0);
 
-    labelSumInterest.textContent = `${interest}€`
+    labelSumInterest.textContent = `${Math.round(interest)}€`
 }
 
-displayMovements(account1.movements);
+const login = (account) => {
+    labelWelcome.textContent = 
+        `Welcome back, ${account.owner.split(' ')[0]}`;
+
+    containerApp.style.opacity = 1;
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+
+    inputLoginPin.blur();
+
+    displayMovements(account.movements);
+    calcDisplayBalance(account.movements);
+    calcIncomes(account.movements);
+    calcOutcomes(account.movements);
+    calcInterest(account.movements, account.interestRate); 
+}
+
+const errorWhileLogin = () => {
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+
+
+}
+//#endregion
+
+//#region METHODS CALLS
+createUsername(accounts);
+/* displayMovements(account1.movements);
 calcDisplayBalance(account1.movements);
 calcIncomes(account1.movements);
 calcOutcomes(account1.movements);
-calcInterest(account1.movements);
-
-
-const createUsername = function(accounts) {
-    accounts.forEach(acc => {
-        acc.username = acc.owner
-        .toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0))
-        .join('');
-    });
-}
-
-createUsername(accounts);
-
+calcInterest(account1.movements); */
+//#endregion
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
@@ -143,8 +170,39 @@ const currencies = new Map([
 ]);
 
 
-// ====> testing section
+//#region Event Handlers
+let currentAccount;
 
+btnLogin.addEventListener('click', (event) => {
+    // prevent form from submitting
+    event.preventDefault();
+
+    try {
+        currentAccount = accounts.find(account => {
+            return account.username === inputLoginUsername.value;
+        });
+    
+        if (!currentAccount) {
+            throw new Error('incorrect username or pin')
+        }
+    
+        if (currentAccount?.pin === Number(inputLoginPin.value)) {
+            login(currentAccount);
+        }
+        else {
+            throw new Error('incorrect username or pin')
+        }
+    }
+    catch (error) {
+        errorWhileLogin();
+        alert(`Login failed: ${error.message}`);
+        console.error(`Login failed: ${error.message}`);
+    }
+});
+//#endregion
+
+
+//#region testing stuff
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 const euroToUsd = 1.1;
@@ -169,3 +227,12 @@ const maxValue = movements.reduce((acc, cur) => {
 
     return acc;
 }, 0);
+
+let neadedAcc = '';
+
+for (let acc of accounts) {
+    if (acc.owner === 'Michael Towns') neadedAcc = acc;
+}
+
+// console.log(neadedAcc);
+//#endregion
