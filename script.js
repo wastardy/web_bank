@@ -70,7 +70,7 @@ const displayMovements = function(movements) {
                     ${i + 1} ${type}
                 </div>
                 <div class="movements__value">
-                    ${movement}
+                    ${movement}€
                 </div>
             </div>
         `;
@@ -82,7 +82,46 @@ const displayMovements = function(movements) {
     });
 }
 
+const calcDisplayBalance = function(movements) {
+    const balance = movements.reduce((acc, cur) => {
+        return acc + cur;
+    }, 0);
+
+    labelBalance.textContent = `${balance}€`;
+}
+
+const calcIncomes = function(movements) {
+    const incomes = movements
+        .filter(mov => mov > 0)
+        .reduce((sum, num) => sum + num, 0);
+
+    labelSumIn.textContent = `${incomes}€`;
+}
+
+const calcOutcomes = function(movements) {
+    const outcomes = movements
+        .filter(mov => mov < 0)
+        .reduce((sum, num) => sum + num, 0);
+
+    labelSumOut.textContent = `${Math.abs(outcomes)}€`
+}
+
+const calcInterest = function(movements) {
+    const interest = movements
+        .filter(mov => mov > 0)
+        .map(deposit => deposit * 1.2 / 100)
+        .filter(interest => interest >= 1)
+        .reduce((sumDeposit, num) => sumDeposit + num, 0);
+
+    labelSumInterest.textContent = `${interest}€`
+}
+
 displayMovements(account1.movements);
+calcDisplayBalance(account1.movements);
+calcIncomes(account1.movements);
+calcOutcomes(account1.movements);
+calcInterest(account1.movements);
+
 
 const createUsername = function(accounts) {
     accounts.forEach(acc => {
@@ -96,9 +135,6 @@ const createUsername = function(accounts) {
 
 createUsername(accounts);
 
-console.log(accounts);
-
-
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
@@ -106,11 +142,30 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 
+
+// ====> testing section
+
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 const euroToUsd = 1.1;
+const totalDepositUSD = movements
+    .filter(mov => mov > 0)
+    .map(mov => mov * euroToUsd)
+    .reduce((acc, cur) => acc + cur, 0);
 
-// map method creates brand new array with changed values
-// const movementsUSD = movements.map(movement => {
-//     return Math.round(movement * euroToUsd);
-// });
+console.log(totalDepositUSD);
+
+
+const deposit = movements.filter(movement => {
+    return movement > 0;
+});
+
+const withdrawals = movements.filter(movement => {
+    return movement < 0;
+});
+
+const maxValue = movements.reduce((acc, cur) => {
+    if (cur > acc) acc = cur;
+
+    return acc;
+}, 0);
