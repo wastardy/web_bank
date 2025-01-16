@@ -154,7 +154,7 @@ nav {
 
 .movements__type--withdrawal {
     background-image: 
-        linear-gradient(to top left, #5f2ae5, #58abff);
+        linear-gradient(to top left, #b31515, #f66e6e);
 }
 
 .movements__value {
@@ -189,7 +189,7 @@ nav {
 }
 
 .summary__value--out {
-    color: #464cf5bc;
+    color: #f81515;
 }
 
 .btn--sort {
@@ -218,9 +218,36 @@ nav {
         linear-gradient(to top left, #39b385, #9be15d);
 }
 
-.operation--close {
+.operation--close-cover {
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 20px;
+    /* padding: 2rem 4rem; */
+    font-size: 20px;
+    font-weight: 600;
+    color: #000000;
     background-image: 
-        linear-gradient(to top left, #2d32c7, #bbc1ff);
+        linear-gradient(to top left, #858585, #dadada);
+}
+
+.operation--close {
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    padding: 2rem 4rem;
+    background-image: 
+        linear-gradient(to top left, #26433e, #889a95);
+    
+    transition: opacity 1s;
+}
+
+.operation--close .form__label {
+    color: #e5e5e5;
 }
 
 h2 {

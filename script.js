@@ -43,10 +43,12 @@ const labelTimer = document.querySelector('.timer');
 
 const containerApp = document.querySelector('.app');
 const containerMovements = document.querySelector('.movements');
+const containerCloseAccount = document.querySelector('.operation--close');
 
 const btnLogin = document.querySelector('.login__btn');
 const btnTransfer = document.querySelector('.form__btn--transfer');
 const btnLoan = document.querySelector('.form__btn--loan');
+const btnCloseCover = document.querySelector('.operation--close-cover');
 const btnClose = document.querySelector('.form__btn--close');
 const btnSort = document.querySelector('.btn--sort');
 
@@ -213,6 +215,8 @@ const transferMoney = (currentAccount) => {
     inputTransferAmount.value = '';
     inputTransferTo.value = '';
 }
+
+
 //#endregion
 
 //#region CALLS
@@ -232,6 +236,7 @@ const currencies = new Map([
 
 
 //#region Event Handlers
+let timer;
 let currentAccount;
 
 btnLogin.addEventListener('click', (event) => {
@@ -265,6 +270,37 @@ btnTransfer.addEventListener('click', (event) => {
     event.preventDefault();
 
     transferMoney(currentAccount);
+});
+
+const restoreCover = () => {
+    btnCloseCover.style.display = 'flex';
+    containerCloseAccount.style.display = 'none';
+    containerCloseAccount.style.opacity = '0';
+}
+
+btnCloseCover.addEventListener('click', (event) => {
+    event.stopPropagation();
+    btnCloseCover.style.display = 'none';
+
+    containerCloseAccount.style.display = 'flex';
+    containerCloseAccount.style.opacity = '1';
+    timer = setTimeout(restoreCover, 60000);
+});
+
+document.addEventListener('click', (event) => {
+    if (!containerCloseAccount.contains(event.target)) {
+        restoreCover();
+    }
+});
+
+containerCloseAccount.addEventListener('click', (event) => {
+    event.stopPropagation();
+});
+
+btnClose.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    closeAccount(currentAccount);
 });
 //#endregion
 
