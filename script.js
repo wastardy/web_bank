@@ -95,12 +95,12 @@ const displayMovements = function(movements) {
     });
 }
 
-const calcDisplayBalance = function(movements) {
-    const balance = movements.reduce((acc, cur) => {
-        return acc + cur;
+const calcDisplayBalance = function(account) {
+    account.balance = account.movements.reduce((sum, num) => {
+        return sum + num;
     }, 0);
 
-    labelBalance.textContent = `${balance}€`;
+    labelBalance.textContent = `${account.balance}€`;
 }
 
 const calcIncomes = function(movements) {
@@ -129,9 +129,20 @@ const calcInterest = function(movements, interestRate) {
     labelSumInterest.textContent = `${Math.round(interest)}€`
 }
 
-const login = (account) => {
+const updateUI = (currentAccount) => {
+    displayMovements(currentAccount.movements);
+    calcDisplayBalance(currentAccount);
+    calcIncomes(currentAccount.movements);
+    calcOutcomes(currentAccount.movements);
+    calcInterest(
+        currentAccount.movements, 
+        currentAccount.interestRate
+    ); 
+}
+
+const login = (currentAccount) => {
     labelWelcome.textContent = 
-        `Welcome back, ${account.owner.split(' ')[0]}`;
+        `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
 
     containerApp.style.opacity = 1;
     inputLoginUsername.value = '';
@@ -139,22 +150,72 @@ const login = (account) => {
 
     inputLoginPin.blur();
 
-    displayMovements(account.movements);
-    calcDisplayBalance(account.movements);
-    calcIncomes(account.movements);
-    calcOutcomes(account.movements);
-    calcInterest(account.movements, account.interestRate); 
+    updateUI(currentAccount);
 }
 
 const errorWhileLogin = () => {
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
+}
 
+const transferMoney = (currentAccount) => {
+    const receiverAccount = accounts.find(acc => 
+        acc.username === inputTransferTo.value
+    );
 
+    const amount = Number(inputTransferAmount.value);
+
+    let balance = currentAccount.balance;
+    console.log('ballance:', balance);
+
+    try {
+        if (amount > 0 
+            && balance >= amount
+            && receiverAccount?.username !== currentAccount.username
+        ) {
+            currentAccount.movements.push(-amount);
+            receiverAccount.movements.push(amount);
+
+            updateUI(currentAccount);
+
+            alert(
+                `successfully transfered ${amount} € to ${receiverAccount.owner}`
+            );
+
+            console.log(
+                'successfully transfered', 
+                amount + '€ to ' + receiverAccount.owner
+            );
+        }
+        else if (amount <= 0) {
+            throw new Error(
+                'you can not transfer negative amount of money'
+            );
+        }
+        else if (balance < amount) {
+            throw new Error(
+                'you have less balance, than needed for current transfer'
+            );
+        }
+        else if (receiverAccount.username === currentAccount.username) {
+            throw new Error(
+                'you can not transfer money to yourself'
+            );
+        }
+        else {
+            throw new Error('something went wrong..');
+        }
+    }
+    catch (error) {
+        console.error('transfering error:', error.message);
+    }
+
+    inputTransferAmount.value = '';
+    inputTransferTo.value = '';
 }
 //#endregion
 
-//#region METHODS CALLS
+//#region CALLS
 createUsername(accounts);
 /* displayMovements(account1.movements);
 calcDisplayBalance(account1.movements);
@@ -199,6 +260,12 @@ btnLogin.addEventListener('click', (event) => {
         console.error(`Login failed: ${error.message}`);
     }
 });
+
+btnTransfer.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    transferMoney(currentAccount);
+});
 //#endregion
 
 
@@ -211,7 +278,7 @@ const totalDepositUSD = movements
     .map(mov => mov * euroToUsd)
     .reduce((acc, cur) => acc + cur, 0);
 
-console.log(totalDepositUSD);
+// console.log(totalDepositUSD);
 
 
 const deposit = movements.filter(movement => {
