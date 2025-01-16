@@ -216,6 +216,32 @@ const transferMoney = (currentAccount) => {
     inputTransferTo.value = '';
 }
 
+const requestLoan = (currentAccount) => {
+    try {
+        const loanAmount = Number(inputLoanAmount.value);
+
+        const checkDeposit = currentAccount.movements.some(movement => {
+            return movement >= loanAmount * 0.1; // any movement >= from 10% of the amount
+        });
+
+        if (loanAmount > 0 && checkDeposit) {
+            currentAccount.movements.push(loanAmount);
+            
+            updateUI(currentAccount);
+
+            alert(`Requested the amount of ${loanAmount}€`)
+        }
+        else {
+            inputLoanAmount.value = '';
+            throw new Error('loan ammount is unacceptable');
+        }
+    }
+    catch(error) {
+        alert(error.message);
+        console.error(error.message);
+    }
+}
+
 const closeAccount = (currentAccount) => {
     let closeUsername = inputCloseUsername.value;
     let closePassword = Number(inputClosePin.value);
@@ -298,6 +324,12 @@ btnTransfer.addEventListener('click', (event) => {
     transferMoney(currentAccount);
 });
 
+btnLoan.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    requestLoan(currentAccount);
+});
+
 const restoreCover = () => {
     btnCloseCover.style.display = 'flex';
     containerCloseAccount.style.display = 'none';
@@ -362,6 +394,20 @@ let neadedAcc = '';
 for (let acc of accounts) {
     if (acc.owner === 'Michael Towns') neadedAcc = acc;
 }
+
+let tempNum = 0;
+const latestWithdrawal = movements.findLast(number => {
+    if (number < tempNum) {
+         tempNum = number;
+    }
+    else {
+         tempNum = tempNum;
+    }
+
+    return number = tempNum;
+});
+
+console.log('Your latest withdrawal:', latestWithdrawal);
 
 // console.log(neadedAcc);
 //#endregion
