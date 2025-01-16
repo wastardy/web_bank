@@ -216,7 +216,33 @@ const transferMoney = (currentAccount) => {
     inputTransferTo.value = '';
 }
 
+const closeAccount = (currentAccount) => {
+    let closeUsername = inputCloseUsername.value;
+    let closePassword = Number(inputClosePin.value);
+    let currentUsername = currentAccount.username;
+    let currentPassword = currentAccount.pin;
 
+    if (closeUsername === currentUsername
+        && closePassword === currentPassword
+    ) {
+        const index = accounts.findIndex(account => {
+            return account.username === currentUsername;
+        });
+        
+        inputCloseUsername.value = '';
+        inputClosePin.value = '';
+        containerApp.style.opacity = 0;
+        labelWelcome.textContent = 'Log in to get started';
+
+        alert(`${currentAccount.owner.slice(' ')[0]}, you closed your account`)
+        console.log(`${currentAccount.owner.slice(' ')[0]}, you closed your account`);
+
+        accounts.splice(index, 1); 
+    }
+    else {
+        alert(`incorrect username or pin`)
+    }
+}
 //#endregion
 
 //#region CALLS
