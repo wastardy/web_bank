@@ -277,6 +277,8 @@ const transferMoney = (currentAccount) => {
                 new Date().toISOString()
             );
 
+            console.log('--->', currentAccount);
+
             updateUI(currentAccount);
 
             alert(
@@ -325,6 +327,11 @@ const requestLoan = (currentAccount) => {
 
         if (loanAmount > 0 && checkDeposit) {
             currentAccount.movements.push(loanAmount);
+            
+            currentAccount.movementsDates.push(
+                new Date().toISOString()
+            );
+            console.log(currentAccount.movementsDates);
             
             updateUI(currentAccount);
 
