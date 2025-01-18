@@ -155,17 +155,29 @@ const editDate = (date) => {
 
 const displayMovements = (currentAccount, sortParam = false) => {
     containerMovements.innerHTML = '';
-
     const movements = currentAccount.movements;
 
-    const movs = sortParam 
-        ? movements.slice().sort((a, b) => a - b) 
-        : movements;
+    const combinedMovementsAndDates = currentAccount.movements
+        .map((mov, i) => {
+            return ({
+                movement: mov, 
+                movementDate: currentAccount.movementsDates.at(i)
+            });
+        });
 
-    movs.forEach(function(movement, i) {
+    if (sortParam) combinedMovementsAndDates.sort(
+            (a, b) => a.movement - b.movement);
+
+    // const movs = sortParam 
+    //     ? movements.slice().sort((a, b) => a - b) 
+    //     : movements;
+
+    combinedMovementsAndDates.forEach((object, i) => {
+        const { movement, movementDate } = object;
+
         const type = movement > 0 ? 'deposit' : 'withdrawal';
         
-        let date = new Date(currentAccount.movementsDates[i]);
+        let date = new Date(movementDate);
         let editedDate = editDate(date);
 
         const html = `
