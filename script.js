@@ -6,7 +6,20 @@ const account1 = {
     movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
     interestRate: 1.2, // %
     pin: 1,
-    type: 'premium'
+    type: 'premium',
+
+	movementsDates: [
+		'2019-11-18T21:31:17.178Z',
+		'2019-12-23T07:42:02.383Z',
+		'2020-01-28T09:15:04.904Z',
+		'2020-04-01T10:17:24.185Z',
+		'2020-05-08T14:11:59.604Z',
+		'2020-05-27T17:01:17.194Z',
+		'2020-07-11T23:36:17.929Z',
+		'2020-07-12T10:51:36.790Z',
+	],
+	currency: 'EUR',
+	locale: 'pt-PT', // de-DE
 };
 
 const account2 = {
@@ -14,7 +27,20 @@ const account2 = {
     movements: [5000, 3400, -150],
     interestRate: 1.5,
     pin: 2,
-    type: 'standart'
+    type: 'standart',
+
+	movementsDates: [
+		'2019-11-01T13:15:33.035Z',
+		'2019-11-30T09:48:16.867Z',
+		'2019-12-25T06:04:23.907Z',
+		'2020-01-25T14:18:46.235Z',
+		'2020-02-05T16:33:06.386Z',
+		'2020-04-10T14:43:26.374Z',
+		'2020-06-25T18:49:59.371Z',
+		'2020-07-26T12:01:20.894Z',
+	],
+	currency: 'USD',
+	locale: 'en-US',
 };
 
 const account3 = {
@@ -105,8 +131,32 @@ const createUsername = function(accounts) {
     });
 }
 
-const displayMovements = function(movements, sortParam = false) {
+const getDate = () => {
+    const now = new Date();
+
+    const day = `${now.getDate()}`.padStart(2, 0);
+    const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    const year = now.getFullYear();
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
+
+    return `${day}/${month}/${year}, ${hour}:${minutes}`;
+}
+
+const editDate = (date) => {
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+    // const hour = date.getHours();
+    // const minutes = date.getMinutes();
+
+    return `${day}/${month}/${year}`;
+}
+
+const displayMovements = (currentAccount, sortParam = false) => {
     containerMovements.innerHTML = '';
+
+    const movements = currentAccount.movements;
 
     const movs = sortParam 
         ? movements.slice().sort((a, b) => a - b) 
@@ -114,15 +164,20 @@ const displayMovements = function(movements, sortParam = false) {
 
     movs.forEach(function(movement, i) {
         const type = movement > 0 ? 'deposit' : 'withdrawal';
+        
+        let date = new Date(currentAccount.movementsDates[i]);
+        let editedDate = editDate(date);
 
-        // <div class="movements__date">3 days ago</div>
         const html = `
             <div class="movements__row">
                 <div class="movements__type movements__type--${type}">
                     ${i + 1} ${type}
                 </div>
+                <div class="movements__date">
+                    ${editedDate}
+                </div>
                 <div class="movements__value">
-                    ${movement}€
+                    ${movement.toFixed(2)}€
                 </div>
             </div>
         `;
@@ -139,7 +194,7 @@ const calcDisplayBalance = function(account) {
         return sum + num;
     }, 0);
 
-    labelBalance.textContent = `${account.balance}€`;
+    labelBalance.textContent = `${account.balance.toFixed(2)}€`;
 }
 
 const calcIncomes = function(movements) {
@@ -147,7 +202,7 @@ const calcIncomes = function(movements) {
         .filter(mov => mov > 0)
         .reduce((sum, num) => sum + num, 0);
 
-    labelSumIn.textContent = `${incomes}€`;
+    labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 }
 
 const calcOutcomes = function(movements) {
@@ -155,7 +210,7 @@ const calcOutcomes = function(movements) {
         .filter(mov => mov < 0)
         .reduce((sum, num) => sum + num, 0);
 
-    labelSumOut.textContent = `${Math.abs(outcomes)}€`
+    labelSumOut.textContent = `${Math.abs(outcomes).toFixed(2)}€`
 }
 
 const calcInterest = function(movements, interestRate) {
@@ -165,11 +220,11 @@ const calcInterest = function(movements, interestRate) {
         .filter(interest => interest >= 1)
         .reduce((sumDeposit, num) => sumDeposit + num, 0);
 
-    labelSumInterest.textContent = `${Math.round(interest)}€`
+    labelSumInterest.textContent = `${interest.toFixed(2)}€`
 }
 
 const updateUI = (currentAccount) => {
-    displayMovements(currentAccount.movements);
+    displayMovements(currentAccount);
     calcDisplayBalance(currentAccount);
     calcIncomes(currentAccount.movements);
     calcOutcomes(currentAccount.movements);
@@ -202,7 +257,7 @@ const transferMoney = (currentAccount) => {
         acc.username === inputTransferTo.value
     );
 
-    const amount = Number(inputTransferAmount.value);
+    const amount = +(inputTransferAmount.value);
 
     let balance = currentAccount.balance;
     console.log('ballance:', balance);
@@ -214,6 +269,13 @@ const transferMoney = (currentAccount) => {
         ) {
             currentAccount.movements.push(-amount);
             receiverAccount.movements.push(amount);
+
+            currentAccount.movementsDates.push(
+                new Date().toISOString()
+            );
+            receiverAccount.movementsDates.push(
+                new Date().toISOString()
+            );
 
             updateUI(currentAccount);
 
@@ -255,7 +317,7 @@ const transferMoney = (currentAccount) => {
 
 const requestLoan = (currentAccount) => {
     try {
-        const loanAmount = Number(inputLoanAmount.value);
+        const loanAmount = +(inputLoanAmount.value);
 
         const checkDeposit = currentAccount.movements.some(movement => {
             return movement >= loanAmount * 0.1; // any movement >= from 10% of the amount
@@ -281,7 +343,7 @@ const requestLoan = (currentAccount) => {
 
 const closeAccount = (currentAccount) => {
     let closeUsername = inputCloseUsername.value;
-    let closePassword = Number(inputClosePin.value);
+    let closePassword = +(inputClosePin.value);
     let currentUsername = currentAccount.username;
     let currentPassword = currentAccount.pin;
 
@@ -306,11 +368,20 @@ const closeAccount = (currentAccount) => {
         alert(`incorrect username or pin`)
     }
 }
+
+const changeRowsColors = () => {
+	[...document.querySelectorAll('.movements__row')]
+		.forEach((row, i) => {
+			if (i % 2 == 0) {
+				row.style.backgroundColor = '#f7f7f7';
+			}
+		});
+}
 //#endregion
 
 //#region CALLS
 createUsername(accounts);
-/* displayMovements(account1.movements);
+/* displayMovements(account1);
 calcDisplayBalance(account1.movements);
 calcIncomes(account1.movements);
 calcOutcomes(account1.movements);
@@ -329,11 +400,20 @@ let timer;
 let sortMovements = false;
 let currentAccount;
 
+// ALWAYS LOGED IN
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = '100';
+
+document.addEventListener('DOMContentLoaded', changeRowsColors);
+containerMovements.addEventListener('scroll', changeRowsColors);
+
 btnLogin.addEventListener('click', (event) => {
     // prevent form from submitting
     event.preventDefault();
 
     try {
+        labelDate.textContent = getDate();
         currentAccount = accounts.find(account => {
             return account.username === inputLoginUsername.value;
         });
@@ -342,7 +422,7 @@ btnLogin.addEventListener('click', (event) => {
             throw new Error('incorrect username or pin')
         }
     
-        if (currentAccount?.pin === Number(inputLoginPin.value)) {
+        if (currentAccount?.pin === +(inputLoginPin.value)) {
             login(currentAccount);
         }
         else {
@@ -360,11 +440,11 @@ btnSort.addEventListener('click', (event) => {
     event.preventDefault();
     if (sortMovements) {
         sortMovements = false;
-        displayMovements(currentAccount.movements, sortMovements);
+        displayMovements(currentAccount, sortMovements);
     }
     else {
         sortMovements = true;
-        displayMovements(currentAccount.movements, sortMovements);
+        displayMovements(currentAccount, sortMovements);
     }
 });
 
@@ -372,6 +452,7 @@ btnTransfer.addEventListener('click', (event) => {
     event.preventDefault();
 
     transferMoney(currentAccount);
+    // console.log(currentAccount.movementsDates);
 });
 
 btnLoan.addEventListener('click', (event) => {
@@ -496,7 +577,7 @@ labelBalance.addEventListener('click', (event) => {
 
     const movementsUI = Array.from(
         document.querySelectorAll('.movements__value'), 
-        el => Number(el.textContent.replace('€', ''))   + '£'
+        el => +(el.textContent.replace('€', ''))   + '£'
     );
 
     // console.log(movementsUI);
@@ -560,14 +641,33 @@ const convertToTitle = (str) => {
 
 convertToTitle(title);
 
+const randInt = (min, max) => 
+	Math.floor(Math.random() * (max - min + 1)) + min;
+
+const curDate = new Date();
+console.log(curDate);
+
+// ============================== PRACTICAL TASKS ==============================
+
 /* TEST 1 TASKS:
-1. Store the the average weight of a "Husky" in a variable "huskyWeight"
-2. Find the name of the only breed that likes both "running" and "fetch" ("dogBothActivities" variable)
-3. Create an array "allActivities" of all the activities of all the dog breeds
-4. Create an array "uniqueActivities" that contains only the unique activities (no activity repetitions). HINT: Use a technique with a special data structure that we studied a few sections ago.
-5. Many dog breeds like to swim. What other activities do these dogs like? Store all the OTHER activities these breeds like to do, in a unique array called "swimmingAdjacent".
-6. Do all the breeds have an average weight of 10kg or more? Log to the console whether "true" or "false".
-7. Are there any breeds that are "active"? "Active" means that the dog has 3 or more activities. Log to the console whether "true" or "false".
+1. 	Store the the average weight of a "Husky" in a variable "huskyWeight"
+
+2. 	Find the name of the only breed that likes both "running" and "fetch" 
+	("dogBothActivities" variable)
+
+3. 	Create an array "allActivities" of all the activities of all the dog breeds
+
+4. 	Create an array "uniqueActivities" that contains only the unique activities 
+	(no activity repetitions). 
+	
+5. 	Many dog breeds like to swim. What other activities do these dogs like? Store all 
+	the OTHER activities these breeds like to do, in a unique array called "swimmingAdjacent".
+
+6. 	Do all the breeds have an average weight of 10kg or more? Log to the console 
+	whether "true" or "false".
+
+7. 	Are there any breeds that are "active"? "Active" means that the dog has 3 or more 
+	activities. Log to the console whether "true" or "false".
 
 +. What's the average weight of the heaviest breed that likes to fetch? HINT: Use the "Math.max" method along with the ... operator.
 
