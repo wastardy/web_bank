@@ -18,7 +18,7 @@ const account1 = {
 		'2025-01-18T23:36:17.929Z',
 		'2025-01-19T10:51:36.790Z',
 	],
-	currency: 'EUR',
+	currency: 'GBP',
 	locale: 'en-GB',
 };
 
@@ -184,6 +184,18 @@ const daysPassed = (date, currentAccount) => {
     // return `${day}/${month}/${year}`;
 }
 
+const formatNumbersAndCurrency = (currentAccount, movement) => {
+    const formattedMovement = Intl.NumberFormat(
+        currentAccount.locale, 
+        {
+            style: 'currency', 
+            currency: currentAccount.currency
+        })
+        .format(movement);
+
+    return formattedMovement;
+}
+
 const displayMovements = (currentAccount, sortParam = false) => {
     containerMovements.innerHTML = '';
     const movements = currentAccount.movements;
@@ -211,6 +223,11 @@ const displayMovements = (currentAccount, sortParam = false) => {
         let date = new Date(movementDate);
         let editedDate = daysPassed(date, currentAccount);
 
+        const formattedMovement = formatNumbersAndCurrency(
+            currentAccount, 
+            movement
+        );
+
         const html = `
             <div class="movements__row">
                 <div class="movements__type movements__type--${type}">
@@ -220,7 +237,7 @@ const displayMovements = (currentAccount, sortParam = false) => {
                     ${editedDate}
                 </div>
                 <div class="movements__value">
-                    ${movement.toFixed(2)}€
+                    ${formattedMovement}
                 </div>
             </div>
         `;
@@ -232,49 +249,76 @@ const displayMovements = (currentAccount, sortParam = false) => {
     });
 }
 
-const calcDisplayBalance = function(account) {
-    account.balance = account.movements.reduce((sum, num) => {
-        return sum + num;
-    }, 0);
+const calcDisplayBalance = (currentAccount) => {
+    currentAccount.balance = currentAccount.movements
+        .reduce((sum, num) => {
+            return sum + num;
+        }, 0);
 
-    labelBalance.textContent = `${account.balance.toFixed(2)}€`;
+    const accountBallance = formatNumbersAndCurrency(
+        currentAccount, 
+        currentAccount.balance
+    );
+
+    labelBalance.textContent = `${accountBallance}`;
 }
 
-const calcIncomes = function(movements) {
+const calcIncomes = (currentAccount) => {
+    const movements = currentAccount.movements;
+
     const incomes = movements
         .filter(mov => mov > 0)
         .reduce((sum, num) => sum + num, 0);
 
-    labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+    const formattedIncomes = formatNumbersAndCurrency(
+        currentAccount, 
+        incomes
+    );
+
+    labelSumIn.textContent = `${formattedIncomes}`;
 }
 
-const calcOutcomes = function(movements) {
+const calcOutcomes = (currentAccount) => {
+    const movements = currentAccount.movements;
+
     const outcomes = movements
         .filter(mov => mov < 0)
         .reduce((sum, num) => sum + num, 0);
+    
+    const absoluteOutcomes = Math.abs(outcomes);
 
-    labelSumOut.textContent = `${Math.abs(outcomes).toFixed(2)}€`
+    const formattedOutcomes = formatNumbersAndCurrency(
+        currentAccount, 
+        absoluteOutcomes
+    );
+
+    labelSumOut.textContent = `${formattedOutcomes}`
 }
 
-const calcInterest = function(movements, interestRate) {
+const calcInterest = (currentAccount) => {
+    const movements = currentAccount.movements;
+    const interestRate = currentAccount.interestRate;
+
     const interest = movements
         .filter(mov => mov > 0)
         .map(deposit => deposit * interestRate / 100)
         .filter(interest => interest >= 1)
         .reduce((sumDeposit, num) => sumDeposit + num, 0);
 
-    labelSumInterest.textContent = `${interest.toFixed(2)}€`
+    const formattedInterest = formatNumbersAndCurrency(
+        currentAccount, 
+        interest
+    );
+
+    labelSumInterest.textContent = `${formattedInterest}`
 }
 
 const updateUI = (currentAccount) => {
     displayMovements(currentAccount);
     calcDisplayBalance(currentAccount);
-    calcIncomes(currentAccount.movements);
-    calcOutcomes(currentAccount.movements);
-    calcInterest(
-        currentAccount.movements, 
-        currentAccount.interestRate
-    ); 
+    calcIncomes(currentAccount);
+    calcOutcomes(currentAccount);
+    calcInterest(currentAccount); 
 }
 
 const login = (currentAccount) => {
@@ -431,11 +475,6 @@ const changeRowsColors = () => {
 
 //#region CALLS
 createUsername(accounts);
-/* displayMovements(account1);
-calcDisplayBalance(account1.movements);
-calcIncomes(account1.movements);
-calcOutcomes(account1.movements);
-calcInterest(account1.movements); */
 //#endregion
 
 const currencies = new Map([
