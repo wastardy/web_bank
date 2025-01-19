@@ -19,7 +19,7 @@ const account1 = {
 		'2025-01-19T10:51:36.790Z',
 	],
 	currency: 'EUR',
-	locale: 'pt-PT', // de-DE
+	locale: 'en-GB',
 };
 
 const account2 = {
@@ -40,7 +40,7 @@ const account2 = {
 		'2020-07-26T12:01:20.894Z',
 	],
 	currency: 'USD',
-	locale: 'en-US',
+	locale: 'pt-PT',
 };
 
 const account3 = {
@@ -147,10 +147,30 @@ const getDate = () => {
     return `${day}/${month}/${year}, ${hour}:${minutes}`;
 }
 
-const daysPassed = (date) => {
-    const day = `${date.getDate()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = date.getFullYear();
+const setDate = (currentAccount) => {
+    const now = new Date();
+    const options = {
+        hour: 'numeric',
+        minute: 'numeric',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        weekday: 'long',
+    }
+    // you can replace 'en-GB' with locale to set your location
+    // const locale = navigator.language;
+
+    const loc = currentAccount.locale;
+
+    labelDate.textContent = new Intl
+        .DateTimeFormat(loc, options)
+        .format(now);
+}
+
+const daysPassed = (date, currentAccount) => {
+    // const day = `${date.getDate()}`.padStart(2, 0);
+    // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    // const year = date.getFullYear();
     // const hour = date.getHours();
     // const minutes = date.getMinutes();
 
@@ -159,9 +179,9 @@ const daysPassed = (date) => {
     if (daysPassed === 0) return 'Today';
     if (daysPassed === 1) return 'Yesterday';
     if (daysPassed <= 7) return `${daysPassed} days ago`;
-    else {
-        return `${day}/${month}/${year}`;
-    }
+    else return Intl.DateTimeFormat(currentAccount.locale).format(date);
+    
+    // return `${day}/${month}/${year}`;
 }
 
 const displayMovements = (currentAccount, sortParam = false) => {
@@ -189,7 +209,7 @@ const displayMovements = (currentAccount, sortParam = false) => {
         const type = movement > 0 ? 'deposit' : 'withdrawal';
         
         let date = new Date(movementDate);
-        let editedDate = daysPassed(date);
+        let editedDate = daysPassed(date, currentAccount);
 
         const html = `
             <div class="movements__row">
@@ -443,10 +463,12 @@ btnLogin.addEventListener('click', (event) => {
     event.preventDefault();
 
     try {
-        labelDate.textContent = getDate();
         currentAccount = accounts.find(account => {
             return account.username === inputLoginUsername.value;
         });
+
+        setDate(currentAccount);
+        // labelDate.textContent = setDate();
     
         if (!currentAccount) {
             throw new Error('incorrect username or pin')
