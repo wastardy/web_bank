@@ -1,10 +1,21 @@
 'use strict';
 
+let logoutTimer;
+
 //#region  USERS
 const account1 = {
     owner: 'Andrew Wastardy',
-    movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
-    interestRate: 1.2, // %
+    movements: [
+        234.56, 
+        482.13, 
+        -412.45, 
+        3124.67, 
+        -678.99, 
+        -129.67, 
+        67.89, 
+        1354.76
+    ],
+    interestRate: 1.2,
     pin: 1,
     type: 'premium',
 
@@ -23,24 +34,42 @@ const account1 = {
 };
 
 const account2 = {
-    owner: 'Mary Davis',
-    movements: [5000, 3400, -150],
-    interestRate: 1.5,
-    pin: 2,
-    type: 'standart',
-
-	movementsDates: [
-		'2019-11-01T13:15:33.035Z',
-		'2019-11-30T09:48:16.867Z',
-		'2019-12-25T06:04:23.907Z',
-		'2020-01-25T14:18:46.235Z',
-		'2020-02-05T16:33:06.386Z',
-		'2020-04-10T14:43:26.374Z',
-		'2020-06-25T18:49:59.371Z',
-		'2020-07-26T12:01:20.894Z',
-	],
-	currency: 'USD',
-	locale: 'pt-PT',
+    owner: 'Tomas West',
+    movements: [
+        423.67, 
+        1070.50, 
+        7500.00, 
+        -5023.45, 
+        921.89, 
+        5334.67, 
+        9987.12, 
+        -1075.89, 
+        -1208.56, 
+        7800.00,
+        -3075.89, 
+        -1198.56, 
+        6823.45
+    ],
+    interestRate: 2.4,
+    pin: 1,
+    type: 'premium', 
+    movementsDates: [
+        '2024-12-12T10:15:04.904Z',
+        '2024-12-22T14:17:24.185Z',
+        '2024-12-30T17:01:17.194Z',
+        '2025-01-01T10:15:04.904Z',
+        '2025-01-04T14:17:24.185Z',
+        '2025-01-08T17:01:17.194Z',
+        '2025-01-12T21:31:17.178Z',
+        '2025-01-14T23:36:17.929Z',
+        '2025-01-18T09:48:16.867Z',
+        '2025-01-22T12:01:20.894Z',
+        '2025-01-26T06:04:23.907Z',
+        '2025-01-28T14:18:46.235Z',
+        '2025-01-29T18:49:59.371Z',
+    ],
+    currency: 'USD',
+    locale: 'en-US',
 };
 
 const account3 = {
@@ -48,36 +77,76 @@ const account3 = {
     movements: [],
     interestRate: 0.7,
     pin: 3,
-    type: 'basic'
+    type: 'basic',
+    movementsDates: [],
+    currency: 'EUR',
+    locale: 'de-DE',
 };
 
 const account4 = {
     owner: 'Sarah Talor',
-    movements: [430, 1000, 700, 50, 90],
+    movements: [435.12, 1023.45, 712.89, 48.56, 92.34],
     interestRate: 1,
     pin: 4,
-    type: 'standart'
+    type: 'standart',
+    movementsDates: [
+        '2024-12-01T10:51:36.790Z',
+        '2024-12-29T07:42:02.383Z',
+        '2025-01-15T09:15:04.904Z',
+        '2025-01-20T10:17:24.185Z',
+        '2025-01-22T14:11:59.604Z',
+    ],
+    currency: 'USD',
+    locale: 'en-US',
 };
+
 const account5 = {
-    owner: 'Brandyn Patek',
-    movements: [430, 1070, 7505, -5000, 922, 5350, 9999, -3077, -1200, 6850],
-    interestRate: 2.4,
-    pin: 1,
-    type: 'premium'
+    owner: 'Mary Davis',
+    movements: [5000.00, 3389.74, -153.21],
+    interestRate: 1.5,
+    pin: 2,
+    type: 'standart',
+
+	movementsDates: [
+		'2025-01-10T21:31:17.178Z',
+        '2025-01-23T07:42:02.383Z',
+        '2025-01-25T09:15:04.904Z',
+	],
+	currency: 'USD',
+	locale: 'pt-PT',
 };
+
 const account6 = {
     owner: 'John Pipe',
     movements: [1300, 6000, -1900],
     interestRate: 0.4,
     pin: 1,
-    type: 'standart'
+    type: 'standart', 
+    movementsDates: [
+        '2024-12-03T09:15:04.904Z',
+        '2025-01-07T10:17:24.185Z',
+        '2025-01-13T17:01:17.194Z',
+    ],
+    currency: 'CAD',
+    locale: 'fr-CA',
 };
+
 const account7 = {
     owner: 'Jim Jam',
     movements: [430, 1000, 712, -50, 1200, -992],
     interestRate: 1.1,
     pin: 1,
-    type: 'standart'
+    type: 'standart', 
+    movementsDates: [
+        '2024-11-25T10:51:36.790Z',
+        '2024-12-15T14:11:59.604Z',
+        '2024-12-28T07:42:02.383Z',
+        '2025-01-06T10:17:24.185Z',
+        '2025-01-12T23:36:17.929Z',
+        '2025-01-18T09:48:16.867Z',
+    ],
+    currency: 'AUD',
+    locale: 'en-AU',
 };
 //#endregion
 
@@ -321,6 +390,28 @@ const updateUI = (currentAccount) => {
     calcInterest(currentAccount); 
 }
 
+const startLogoutTimer = () => {
+    let time = 300;
+
+    const tick = () => {
+        const min = String(Math.trunc(time / 60)).padStart(2, 0);
+        const sec = String(Math.trunc(time % 60)).padStart(2, 0);
+
+        labelTimer.textContent = `${min}:${sec}`;
+        
+        if (time === 0) {
+            clearInterval(timer);
+            logout();
+        }
+        time--;
+    }
+
+    tick();
+    const timer = setInterval(tick, 1000);
+
+    return timer;
+}
+
 const login = (currentAccount) => {
     labelWelcome.textContent = 
         `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
@@ -331,7 +422,20 @@ const login = (currentAccount) => {
 
     inputLoginPin.blur();
 
+    if (logoutTimer) {
+        clearInterval(logoutTimer);
+    }
+    logoutTimer = startLogoutTimer();
+
     updateUI(currentAccount);
+}
+
+const logout = () => {
+    labelWelcome.textContent = `Log in to get started`;
+
+    containerApp.style.opacity = 0;
+
+    inputLoginPin.blur();
 }
 
 const errorWhileLogin = () => {
@@ -367,6 +471,10 @@ const transferMoney = (currentAccount) => {
             console.log('--->', currentAccount);
 
             updateUI(currentAccount);
+
+            // reset login timer
+            clearInterval(logoutTimer);
+            logoutTimer = startLogoutTimer();
 
             alert(
                 `successfully transfered ${amount} € to ${receiverAccount.owner}`
@@ -413,16 +521,29 @@ const requestLoan = (currentAccount) => {
         });
 
         if (loanAmount > 0 && checkDeposit) {
-            currentAccount.movements.push(loanAmount);
+            setTimeout(() => {
+                currentAccount.movements.push(loanAmount);
             
-            currentAccount.movementsDates.push(
-                new Date().toISOString()
-            );
-            console.log(currentAccount.movementsDates);
-            
-            updateUI(currentAccount);
+                currentAccount.movementsDates.push(
+                    new Date().toISOString()
+                );
+                console.log(currentAccount.movementsDates);
+                
+                updateUI(currentAccount);
 
-            alert(`Requested the amount of ${loanAmount}€`)
+                // reset login timer
+                clearInterval(logoutTimer);
+                logoutTimer = startLogoutTimer();
+
+                const formattedLoan = formatNumbersAndCurrency(
+                    currentAccount, 
+                    loanAmount
+                );
+
+                alert(`Requested amount received (${formattedLoan})`);
+                }, 4000
+            );
+            alert(`Loan has been requested!`);
         }
         else {
             inputLoanAmount.value = '';
@@ -736,7 +857,16 @@ const randInt = (min, max) =>
 	Math.floor(Math.random() * (max - min + 1)) + min;
 
 const curDate = new Date();
-console.log(curDate);
+// console.log(curDate);
+
+const params = ['Andrew', 'fullstack developer'];
+setTimeout(
+    (name, role) => console.log(
+        // `Hello, ${name}! Now you are ${role}!`
+    ), 
+    2000, 
+    ...params
+);
 
 // ============================== PRACTICAL TASKS ==============================
 
