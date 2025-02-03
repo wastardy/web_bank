@@ -24,6 +24,9 @@ const allNavbarLinks = document.querySelectorAll('.nav__link');
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
+
+// menu fade animation
+
 //#endregion
 
 //#region Methods
@@ -125,7 +128,26 @@ function switchTabs (event) {
 
 ///////////////////////////////////////////////////
 
+// 4th task (menu fade animation)
+// Passing arguments to event handler
+function navbarHover (event) {
+    if (event.target.classList.contains('nav__link')) {
+        const link = event.target;
 
+        const nav = link.closest('.nav');
+        
+        const siblings = nav.querySelectorAll('.nav__link');
+
+        const logo = nav.querySelector('.nav__logo');
+
+        // opacity === 0.5 ? 1 : 0.5;
+
+        siblings.forEach(element => {
+            if (element !== link) element.style.opacity = this;
+        });
+        if (logo) logo.style.opacity = this;
+    }
+}
 //#endregion
 
 //#region Event Handlers
@@ -164,6 +186,13 @@ navLinks.addEventListener('click', handleNavbarClick);
 
 // third task (tabbed component)
 tabsContainer.addEventListener('click', switchTabs);
+
+///////////////////////////////////////////////////
+
+// forth task (menu fade animation)
+// Passing argument into handler func
+navbar.addEventListener('mouseover', navbarHover.bind(0.5));
+navbar.addEventListener('mouseout', navbarHover.bind(1));
 //#endregion
 
 //#region Testing
