@@ -19,6 +19,11 @@ const navLink = document.querySelector('.nav__link');
 
 // smooth page navigation
 const allNavbarLinks = document.querySelectorAll('.nav__link');
+
+// tabbed component
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
 //#endregion
 
 //#region Methods
@@ -87,11 +92,43 @@ function handleNavbarClick (event) {
         });
     }
 }
+
 ///////////////////////////////////////////////////
+
+// 3rd task (tabbed component)
+// Event Delegation & DOM Traversing
+function switchTabs (event) {
+    // const clicked = event.target.parentElement;
+    const clicked = event.target.closest('.operations__tab');
+    // console.log(clicked);
+
+    // Guard clause
+    if (!clicked) return;
+
+    // Remove active class
+    tabs.forEach(tab => 
+        tab.classList.remove('operations__tab--active')
+    );
+    tabsContent.forEach(content => 
+        content.classList.remove('operations__content--active')
+    );
+
+    // Active tab
+    clicked.classList.add('operations__tab--active');
+
+    // Activate content area
+    document.querySelector(
+        `.operations__content--${clicked.dataset.tab}`
+    ).classList.add('operations__content--active');
+
+}
+
+///////////////////////////////////////////////////
+
 
 //#endregion
 
-//#region Event Listeners
+//#region Event Handlers
 btnsOpenModal.forEach(button => {
     return button.addEventListener('click', openModal);
 });
@@ -122,6 +159,11 @@ btnScrollTo.addEventListener('click', smoothScroll);
 // );
 
 navLinks.addEventListener('click', handleNavbarClick);
+
+///////////////////////////////////////////////////
+
+// third task (tabbed component)
+tabsContainer.addEventListener('click', switchTabs);
 //#endregion
 
 //#region Testing
@@ -149,6 +191,7 @@ document.querySelector('.btn-close-cookie')
 */
 
 ///////////////////////////////////////////////////
+
 // Styles
 /* message.style.backgroundColor = '#37383d';
 message.style.width = '103.7%';
@@ -163,6 +206,7 @@ console.log(logo.getAtribute('src'));
 */
 
 ///////////////////////////////////////////////////
+
 // Types of events & events handlers
 // headerImage.addEventListener('mouseenter', () => {
 //     alert('haha got u, motherfucker');
@@ -174,6 +218,7 @@ console.log(logo.getAtribute('src'));
 // }
 
 ///////////////////////////////////////////////////
+
 // Randomcolor, Event propagation
 /* const randomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -202,4 +247,13 @@ navLink.addEventListener('click', function (e) {
     // Stop propagation <=========================
     // e.stopPropagation();
 }); */
+
+// DOM Traversing
+// const h1 = document.querySelector('h1');
+// h1.firstElementChild.style.color = 'red';
+
+///////////////////////////////////////////////////
+
+// Tabbed component
+
 //#endregion
