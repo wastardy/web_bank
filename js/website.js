@@ -148,6 +148,10 @@ function navbarHover (event) {
         if (logo) logo.style.opacity = this;
     }
 }
+
+///////////////////////////////////////////////////
+
+// 5th task (sticky navbar)
 //#endregion
 
 //#region Event Handlers
@@ -193,6 +197,21 @@ tabsContainer.addEventListener('click', switchTabs);
 // Passing argument into handler func
 navbar.addEventListener('mouseover', navbarHover.bind(0.5));
 navbar.addEventListener('mouseout', navbarHover.bind(1));
+
+///////////////////////////////////////////////////
+
+// fifth task (sticky navbar)
+const initialCoordinates = section1.getBoundingClientRect();
+
+window.addEventListener('scroll', function (event) {
+    // console.log(this.window.scrollY);
+    if (window.scrollY > initialCoordinates.top) {
+        navbar.classList.add('sticky');
+    }
+    else {
+        navbar.classList.remove('sticky');
+    }
+});
 //#endregion
 
 //#region Testing
