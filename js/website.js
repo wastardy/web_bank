@@ -9,6 +9,16 @@ const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 // first task (smooth scroll)
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1'); 
+
+const headerImage = document.querySelector('.header__img'); 
+
+// event propagation
+const navbar = document.querySelector('.nav');
+const navLinks = document.querySelector('.nav__links');
+const navLink = document.querySelector('.nav__link');
+
+// smooth page navigation
+const allNavbarLinks = document.querySelectorAll('.nav__link');
 //#endregion
 
 //#region Methods
@@ -23,13 +33,62 @@ const closeModal = () => {
     overlay.classList.add('hidden');
 };
 
-// first task (smooth scroll)
+// 1st task (smooth scroll)
 const smoothScroll = () => {
-    // event.preventDefault();
-
     const section1Coords = section1.getBoundingClientRect();
-    console.log(section1Coords);
+    // console.log(section1Coords);
+
+    // window.scrollTo(
+    //     section1Coords.left + window.pageXOffset, 
+    //     section1Coords.top + window.pageYOffset
+    // );
+
+    window.scrollTo({
+        left: section1Coords.left + window.pageXOffset, 
+        top: section1Coords.top + window.pageYOffset,
+        behavior: 'smooth'
+    });
+
+    // new way to implement smooth scroll
+    section1.scrollIntoView({ behavior: 'smooth' });
 }
+
+///////////////////////////////////////////////////
+
+// 2nd task (page navigation)
+// Unofficient Approach <================
+/* function handleNavbarClick (event) {
+    event.preventDefault();
+    // console.log('LINKLINKLINK');
+
+    // const id = event.currentTarget.getAttribute('href');
+    const id = this.getAttribute('href');
+    // console.log(id);
+
+    document.querySelector(id).scrollIntoView({
+        behavior: 'smooth'
+    });
+}*/
+
+// Use instead event delegation
+// 1. Add event listener to common parent elemt
+// 2. Determine what element originated the event
+function handleNavbarClick (event) {
+    event.preventDefault();
+    
+    if (event.target.classList.contains('nav__link')) {
+        // console.log('LINK');
+        
+        const id = event.target.getAttribute('href');
+        //console.log(id);
+
+        document.querySelector(id).scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+}
+///////////////////////////////////////////////////
+
 //#endregion
 
 //#region Event Listeners
@@ -48,24 +107,21 @@ document.addEventListener('keydown', (event) => {
 });
 
 // first task (smooth scroll)
-btnScrollTo.addEventListener('click', (event) => {
-    const section1Coords = section1.getBoundingClientRect();
-    // console.log(section1Coords);
+btnScrollTo.addEventListener('click', smoothScroll);
 
-    // window.scrollTo(
-    //     section1Coords.left + window.pageXOffset, 
-    //     section1Coords.top + window.pageYOffset
-    // );
+///////////////////////////////////////////////////
 
-    window.scrollTo({
-        left: section1Coords.left + window.pageXOffset, 
-        top: section1Coords.top + window.pageYOffset,
-        behavior: 'smooth'
-    });
+// second task (page navigation)
+// Use event delegation
+// 1. Add event listener to common parent elemt
+// 2. Determine what element originated the event
 
-    // new way to implement smooth scroll
-    section1.scrollIntoView({ behavior: 'smooth' });
-});
+// Bad approach <===============================
+// allNavbarLinks.forEach(navLink => 
+//     navLink.addEventListener('click', handleNavbarClick)
+// );
+
+navLinks.addEventListener('click', handleNavbarClick);
 //#endregion
 
 //#region Testing
@@ -92,6 +148,7 @@ document.querySelector('.btn-close-cookie')
     });
 */
 
+///////////////////////////////////////////////////
 // Styles
 /* message.style.backgroundColor = '#37383d';
 message.style.width = '103.7%';
@@ -105,5 +162,44 @@ const logo = document.querySelector('nav__logo');
 console.log(logo.getAtribute('src'));
 */
 
+///////////////////////////////////////////////////
+// Types of events & events handlers
+// headerImage.addEventListener('mouseenter', () => {
+//     alert('haha got u, motherfucker');
+// });
 
+// oldschool way
+// headerImage.onmouseenter = function () {
+//     alert('haha got u, motherfucker');
+// }
+
+///////////////////////////////////////////////////
+// Randomcolor, Event propagation
+/* const randomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+const randomColor = () => `rgb(
+    ${randomInt(0, 255)}, 
+    ${randomInt(0, 255)}, 
+    ${randomInt(0, 255)}
+)`;
+
+navbar.addEventListener('click', function (e) {
+    console.log('NAVBAR', e.target, e.currentTarget);
+    this.style.backgroundColor = randomColor();
+});
+
+navLinks.addEventListener('click', function (e) {
+    console.log('Links', e.target, e.currentTarget);
+    this.style.backgroundColor = randomColor();
+});
+
+navLink.addEventListener('click', function (e) {
+    console.log('Link', e.target, e.currentTarget);
+    this.style.backgroundColor = randomColor();
+
+    // Stop propagation <=========================
+    // e.stopPropagation();
+}); */
 //#endregion
