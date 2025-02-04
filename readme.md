@@ -1,16 +1,25 @@
 # Web Bank
 
-Something like bank website for practicing JavaScript.
+Something like bank website for practicing JavaScript, DOM & Events.
 
 # Visit Bank Website [Here 📌]()
 
 ## Website UI
+<img src="./images/section1_ui.png" />
+
+---
+
+<img src="./images/testimonials_ui.png" />
 
 ## User Account UI
 <img src="./images/account_ui.png" />
 
 ## Features
 
+- **DOM manipulation, Event Handling**
+
+- **Intersection Observer API**: Used the Intersection Observer API for sticky navigation, section reveal, and lazy loading.
+  
 - **Working with arrays**: Manipulation of arrays and using array methods like `map`, `filter`, `reduce` for managing account data and transactions.
 
 - **Date handling with Intl**: Utilization of `Intl.DateTimeFormat` for displaying dates in a localized format for account transactions.
