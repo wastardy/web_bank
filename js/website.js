@@ -33,6 +33,15 @@ const allSections = document.querySelectorAll('.section');
 
 // lazy loading images
 const imageTargets = document.querySelectorAll('img[data-src]');
+
+// slider
+const slider = document.querySelector('.slider');
+const slides = document.querySelectorAll('.slide');
+const buttonLeft = document.querySelector('.slider__btn--left');
+const buttonRight = document.querySelector('.slider__btn--right');
+
+let currentSlide = 0;
+const maxSlides = slides.length;
 //#endregion
 
 //#region Methods
@@ -216,6 +225,39 @@ function loadImage (entries, observer) {
 
     observer.unobserve(entry.target);
 }
+
+///////////////////////////////////////////////////
+
+// nineth task (slider)
+function goToSlide (currentSlide) {
+    slides.forEach((slide, i) => {    
+        slide.style.transform = `translateX(
+            ${(i - currentSlide) * 100}%
+        )`
+    });
+}
+
+function nextSlide () {
+    if (currentSlide === maxSlides - 1) {
+        currentSlide = 0;
+    }
+    else {
+        currentSlide++;
+    }
+
+    goToSlide(currentSlide);
+}
+
+function previousSlide () {
+    if (currentSlide <= 0) {
+        currentSlide = maxSlides - 1;
+    }
+    else {
+        currentSlide--;
+    }
+
+    goToSlide(currentSlide);
+}
 //#endregion
 
 //#region Event Handlers
@@ -314,6 +356,17 @@ const imageObserver = new IntersectionObserver(
 );
 
 imageTargets.forEach(image => imageObserver.observe(image));
+
+///////////////////////////////////////////////////
+
+// nineth task (slider)
+goToSlide(currentSlide);
+
+// go to the next slide
+buttonRight.addEventListener('click', nextSlide);
+
+// go to prevoius slide
+buttonLeft.addEventListener('click', previousSlide);
 //#endregion
 
 //#region Testing
