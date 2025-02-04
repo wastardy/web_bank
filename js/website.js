@@ -28,6 +28,8 @@ const tabsContent = document.querySelectorAll('.operations__content');
 // sticky navbar, Observer API
 const header = document.querySelector('.header');
 
+// reveal sections
+const allSections = document.querySelectorAll('.section');
 //#endregion
 
 //#region Methods
@@ -177,6 +179,10 @@ function obsNavbarSticky (entries) {
         navbar.classList.remove('sticky');
     }
 }
+
+///////////////////////////////////////////////////
+
+// 7th task (reveal sections)
 //#endregion
 
 //#region Event Handlers
@@ -226,9 +232,9 @@ navbar.addEventListener('mouseout', navbarHover.bind(1));
 ///////////////////////////////////////////////////
 
 // fifth task (sticky navbar)
-const initialCoordinates = section1.getBoundingClientRect();
+/* const initialCoordinates = section1.getBoundingClientRect();
 
-// window.addEventListener('scroll', navbarSticky);
+    window.addEventListener('scroll', navbarSticky); */
 
 ///////////////////////////////////////////////////
 
@@ -245,6 +251,32 @@ const headerObserver = new IntersectionObserver(
 );
 
 headerObserver.observe(header);
+
+///////////////////////////////////////////////////
+
+// seventh task (reveal sections)
+function revealSection (entries, observer) {
+    const [ entry ] = entries;
+    console.log(entry);
+
+    if (!entry.isIntersecting) return;
+
+    entry.target.classList.remove('section--hidden');
+    observer.unobserve(entry.target);
+}
+
+const sectionsObserver = new IntersectionObserver(
+    revealSection, 
+    {
+        root: null,
+        threshold: 0.17,
+    }
+);
+
+allSections.forEach(section => {
+    sectionsObserver.observe(section);
+    section.classList.add('section--hidden');
+});
 //#endregion
 
 //#region Testing
