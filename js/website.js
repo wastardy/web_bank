@@ -522,6 +522,9 @@ observer.observe(section1); */
 
 ///////////////////////////////////////////////////
 
-// 
+// window.addEventListener('beforeunload', function (event) {
+//     event.preventDefault();
+//     event.returnValue = 'Are you sure you want to leave?';
+// });
 
 //#endregion
