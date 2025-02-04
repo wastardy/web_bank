@@ -30,6 +30,9 @@ const header = document.querySelector('.header');
 
 // reveal sections
 const allSections = document.querySelectorAll('.section');
+
+// lazy loading images
+const imageTargets = document.querySelectorAll('img[data-src]');
 //#endregion
 
 //#region Methods
@@ -196,7 +199,23 @@ function revealSection (entries, observer) {
 
 ///////////////////////////////////////////////////
 
-// 8th task ()
+// 8th task (lazy loading images)
+function loadImage (entries, observer) {
+    const [ entry ] = entries;
+
+    if (!entry.isIntersecting) return;
+
+    entry.target.src = entry.target.dataset.src;
+
+    // bad idea for those, who have slow enternet
+    // entry.target.classList.remove('lazy-img');
+
+    entry.target.addEventListener('load', () => {
+        entry.target.classList.remove('lazy-img');
+    });
+
+    observer.unobserve(entry.target);
+}
 //#endregion
 
 //#region Event Handlers
@@ -284,7 +303,17 @@ allSections.forEach(section => {
 
 ///////////////////////////////////////////////////
 
-// eighth task (reveal sections)
+// eighth task (lazy loading images)
+const imageObserver = new IntersectionObserver(
+    loadImage,
+    {
+        root: null,
+        threshold: 0,
+        rootMargin: '-200px'
+    }
+);
+
+imageTargets.forEach(image => imageObserver.observe(image));
 //#endregion
 
 //#region Testing
