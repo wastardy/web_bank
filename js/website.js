@@ -39,6 +39,7 @@ const slider = document.querySelector('.slider');
 const slides = document.querySelectorAll('.slide');
 const buttonLeft = document.querySelector('.slider__btn--left');
 const buttonRight = document.querySelector('.slider__btn--right');
+const dotsContainer = document.querySelector('.dots');
 
 let currentSlide = 0;
 const maxSlides = slides.length;
@@ -258,6 +259,15 @@ function previousSlide () {
 
     goToSlide(currentSlide);
 }
+
+function createDots () {
+    slides.forEach((_, i) => {
+        dotsContainer.insertAdjacentHTML(
+            'beforeend',
+            `<button class="dots__dot" data-slide="${i}"></button>`
+        );
+    });
+}
 //#endregion
 
 //#region Event Handlers
@@ -361,12 +371,20 @@ imageTargets.forEach(image => imageObserver.observe(image));
 
 // nineth task (slider)
 goToSlide(currentSlide);
+createDots();
 
 // go to the next slide
 buttonRight.addEventListener('click', nextSlide);
 
 // go to prevoius slide
 buttonLeft.addEventListener('click', previousSlide);
+
+document.addEventListener('keydown', function (event) {
+    console.log(event);
+
+    if (event.key === 'ArrowLeft') previousSlide();
+    if (event.key === 'ArrowRight') nextSlide();
+});
 //#endregion
 
 //#region Testing
