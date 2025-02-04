@@ -2,7 +2,7 @@
 
 Something like bank website for practicing JavaScript, DOM & Events.
 
-# Visit Bank Website [Here 📌]()
+# Visit Bank Website [Here 📌](https://wastardy.github.io/web_bank/)
 
 ## Website UI
 <img src="./images/section1_ui.png" />
