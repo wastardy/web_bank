@@ -25,7 +25,8 @@ const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 
-// menu fade animation
+// sticky navbar, Observer API
+const header = document.querySelector('.header');
 
 //#endregion
 
@@ -152,6 +153,30 @@ function navbarHover (event) {
 ///////////////////////////////////////////////////
 
 // 5th task (sticky navbar)
+/* function navbarSticky (event) {
+    // console.log(this.window.scrollY);
+    if (window.scrollY > initialCoordinates.top) {
+        navbar.classList.add('sticky');
+    }
+    else {
+        navbar.classList.remove('sticky');
+    }
+} */
+
+///////////////////////////////////////////////////
+
+// 6th task (Observer API)
+function obsNavbarSticky (entries) {
+    const [ entry ] = entries;
+    // console.log(entry);
+
+    if (!entry.isIntersecting) {
+        navbar.classList.add('sticky');
+    }
+    else {
+        navbar.classList.remove('sticky');
+    }
+}
 //#endregion
 
 //#region Event Handlers
@@ -203,15 +228,23 @@ navbar.addEventListener('mouseout', navbarHover.bind(1));
 // fifth task (sticky navbar)
 const initialCoordinates = section1.getBoundingClientRect();
 
-window.addEventListener('scroll', function (event) {
-    // console.log(this.window.scrollY);
-    if (window.scrollY > initialCoordinates.top) {
-        navbar.classList.add('sticky');
+// window.addEventListener('scroll', navbarSticky);
+
+///////////////////////////////////////////////////
+
+// sixth task (observer API)
+const navbarHeight = navbar.getBoundingClientRect().height;
+
+const headerObserver = new IntersectionObserver(
+    obsNavbarSticky, 
+    {
+        root: null, // for viewing entire viewport
+        threshold: 0,
+        rootMargin: `-${navbarHeight}px`,
     }
-    else {
-        navbar.classList.remove('sticky');
-    }
-});
+);
+
+headerObserver.observe(header);
 //#endregion
 
 //#region Testing
@@ -302,6 +335,23 @@ navLink.addEventListener('click', function (e) {
 
 ///////////////////////////////////////////////////
 
-// Tabbed component
+// Observer API
+/* const obsCallback = function (entries, observer) {
+    entries.forEach(entry => {
+        console.log(entry);
+    });
+}
+
+const obsOptions = {
+    root: null, 
+    threshold: [0, 0.2], 
+};
+
+const observer = new IntersectionObserver(obsCallback, obsOptions);
+observer.observe(section1); */
+
+///////////////////////////////////////////////////
+
+// 
 
 //#endregion
