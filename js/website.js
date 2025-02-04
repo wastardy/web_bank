@@ -183,6 +183,20 @@ function obsNavbarSticky (entries) {
 ///////////////////////////////////////////////////
 
 // 7th task (reveal sections)
+function revealSection (entries, observer) {
+    // const [ entry ] = entries;
+    // console.log(entry);
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        entry.target.classList.remove('section--hidden');
+        observer.unobserve(entry.target);
+    });
+}
+
+///////////////////////////////////////////////////
+
+// 8th task ()
 //#endregion
 
 //#region Event Handlers
@@ -255,16 +269,6 @@ headerObserver.observe(header);
 ///////////////////////////////////////////////////
 
 // seventh task (reveal sections)
-function revealSection (entries, observer) {
-    const [ entry ] = entries;
-    console.log(entry);
-
-    if (!entry.isIntersecting) return;
-
-    entry.target.classList.remove('section--hidden');
-    observer.unobserve(entry.target);
-}
-
 const sectionsObserver = new IntersectionObserver(
     revealSection, 
     {
@@ -277,6 +281,10 @@ allSections.forEach(section => {
     sectionsObserver.observe(section);
     section.classList.add('section--hidden');
 });
+
+///////////////////////////////////////////////////
+
+// eighth task (reveal sections)
 //#endregion
 
 //#region Testing
