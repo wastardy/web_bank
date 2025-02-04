@@ -40,6 +40,7 @@ const slides = document.querySelectorAll('.slide');
 const buttonLeft = document.querySelector('.slider__btn--left');
 const buttonRight = document.querySelector('.slider__btn--right');
 const dotsContainer = document.querySelector('.dots');
+// const allDots = document.querySelectorAll('.dots__dot');
 
 let currentSlide = 0;
 const maxSlides = slides.length;
@@ -247,6 +248,7 @@ function nextSlide () {
     }
 
     goToSlide(currentSlide);
+    activateDot(currentSlide);
 }
 
 function previousSlide () {
@@ -258,6 +260,7 @@ function previousSlide () {
     }
 
     goToSlide(currentSlide);
+    activateDot(currentSlide);
 }
 
 function createDots () {
@@ -267,6 +270,22 @@ function createDots () {
             `<button class="dots__dot" data-slide="${i}"></button>`
         );
     });
+}
+
+function activateDot (currentSlide) {
+    document
+        .querySelectorAll('.dots__dot')
+        .forEach(dot => dot.classList.remove('dots__dot--active'));
+
+    document.querySelector(
+        `.dots__dot[data-slide="${currentSlide}"]`
+    ).classList.add('dots__dot--active');
+}
+
+function initSlider () {
+    goToSlide(currentSlide);
+    createDots();
+    activateDot(currentSlide);
 }
 //#endregion
 
@@ -370,8 +389,7 @@ imageTargets.forEach(image => imageObserver.observe(image));
 ///////////////////////////////////////////////////
 
 // nineth task (slider)
-goToSlide(currentSlide);
-createDots();
+initSlider();
 
 // go to the next slide
 buttonRight.addEventListener('click', nextSlide);
@@ -380,10 +398,22 @@ buttonRight.addEventListener('click', nextSlide);
 buttonLeft.addEventListener('click', previousSlide);
 
 document.addEventListener('keydown', function (event) {
-    console.log(event);
-
+    // console.log(event);
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+    }
+    
     if (event.key === 'ArrowLeft') previousSlide();
     if (event.key === 'ArrowRight') nextSlide();
+});
+
+dotsContainer.addEventListener('click', function (event) {
+    if (event.target.classList.contains('dots__dot')) {
+        currentSlide = Number(event.target.dataset.slide);
+
+        goToSlide(currentSlide);
+        activateDot(currentSlide);
+    }
 });
 //#endregion
 
